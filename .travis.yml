@@ -1,0 +1,5 @@
+lang: ruby
+cache: bundler
+
+script:
+  - bundle exec rake
