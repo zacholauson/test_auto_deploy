@@ -3,36 +3,38 @@ machine:
     version: 2.7.3
   services:
     - docker
+  post:
+    - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
+    - pip install awscli
+
+
+checkout:
+  post:
+    - mkdir ~/.aws
+    - envsubst < ./.aws_credentials.template > ~/.aws/credentials
+    - cp ./.aws_config ~/.aws/config
 
 dependencies:
   cache_directories:
     - "vendor/bundle"
-
   pre:
-    - pip install awscli
     - rvm install 2.1.5
-    - docker build -t zacholauson/test_auto_deploy:$CIRCLE_SHA1 .
-
   override:
     - bundle install --path vendor/bundle
+  post:
+    - docker build -t zacholauson/test_auto_deploy:$CIRCLE_SHA1 .
 
 test:
   override:
     - bundle exec rake
   post:
-    - docker run -d -p 3000:80 -e "SECRET_KEY_BASE=notevenasecretbro" zacholauson/test_auto_deploy:$CIRCLE_SHA1; sleep 10
+    - docker run -d -p 3000:80 -e "SECRET_KEY_BASE=notevenasecretbro" zacholauson/test_auto_deploy:$CIRCLE_SHA1; sleep 20
     - curl --retry 10 --retry-delay 5 -v http://localhost:3000
 
 deployment:
   elasticbeanstalk:
+    owner: zacholauson
     branch: master
     commands:
-      - docker info
-      - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
       - docker push zacholauson/test_auto_deploy:$CIRCLE_SHA1
-      - mkdir ~/.aws
-      - envsubst < ./.aws_credentials.template > ~/.aws/credentials
-      - cp .aws_config ~/.aws/config
-      - chmod +x ./deploy
-      - ./deploy $CIRCLE_SHA1
-
+      - /bin/bash ./deploy $CIRCLE_SHA1
