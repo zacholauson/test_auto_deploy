@@ -1,0 +1,13 @@
+dependencies:
+  cache_directories:
+    - "vendor/bundle"
+
+  pre:
+    - rvm install 2.1.5
+
+  override:
+    - bundle install --path vendor/bundle
+
+test:
+  override:
+    - bundle exec rake
