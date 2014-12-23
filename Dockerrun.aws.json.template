@@ -1,9 +1,5 @@
 {
   "AWSEBDockerrunVersion": "1",
-  "Authentication": {
-    "Bucket": "zacholauson-shared",
-    "Key": "dockercfg"
-  },
   "Image": {
     "Name": "zacholauson/test_auto_deploy:<TAG>",
     "Update": "true"
