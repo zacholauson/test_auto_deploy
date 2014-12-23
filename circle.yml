@@ -30,7 +30,7 @@ deployment:
       - docker info
       - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
       - docker push zacholauson/test_auto_deploy:$CIRCLE_SHA1
-      - touch ~/.aws/credentials
+      - mkdir ~/.aws
       - envsubst < ./.aws_credentials.template > ~/.aws/credentials
       - cp .aws_config ~/.aws/config
       - chmod +x ./deploy
