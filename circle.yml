@@ -3,16 +3,23 @@ machine:
     version: 2.7.3
   services:
     - docker
+  post:
+    - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
+    - pip install awscli
+
+
+checkout:
+  post:
+    - mkdir ~/.aws
+    - envsubst < ./.aws_credentials.template > ~/.aws/credentials
+    - cp ./.aws_config ~/.aws/config
 
 dependencies:
   cache_directories:
     - "vendor/bundle"
-
   pre:
-    - pip install awscli
     - rvm install 2.1.5
     - docker build -t zacholauson/test_auto_deploy:$CIRCLE_SHA1 .
-
   override:
     - bundle install --path vendor/bundle
 
@@ -27,12 +34,5 @@ deployment:
   elasticbeanstalk:
     branch: master
     commands:
-      - docker info
-      - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
       - docker push zacholauson/test_auto_deploy:$CIRCLE_SHA1
-      - mkdir ~/.aws
-      - envsubst < ./.aws_credentials.template > ~/.aws/credentials
-      - cp .aws_config ~/.aws/config
-      - chmod +x ./deploy
-      - ./deploy $CIRCLE_SHA1
-
+      - /bin/bash ./deploy $CIRCLE_SHA1
