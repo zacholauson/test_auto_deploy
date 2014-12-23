@@ -1,3 +1,7 @@
+machine:
+  services:
+    - docker
+
 dependencies:
   cache_directories:
     - "vendor/bundle"
@@ -11,3 +15,12 @@ dependencies:
 test:
   override:
     - bundle exec rake
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker info
+      - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
+      - docker build -t zacholauson/test_auto_deploy .
+      - docker push zacholauson/test_auto_deploy
