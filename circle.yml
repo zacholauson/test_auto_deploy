@@ -31,5 +31,7 @@ deployment:
       - docker info
       - docker login -e zmolauson@gmail.com -u zacholauson -p $DOCKER_PASSWORD
       - docker push zacholauson/test_auto_deploy:$CIRCLE_SHA1
-      - ./deploy.sh $CIRCLE_SHA1
+      - echo $CIRCLE_SHA1
+      - chmod +x ./deploy
+      - ./deploy $CIRCLE_SHA1
 
